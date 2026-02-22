@@ -14,4 +14,5 @@ public interface IAdobeClient
     Task<Result<PendingLicense>> GetCustomerOpenAcquisitionsAsync(string customerId, CancellationToken ct = default);
 
     Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default);
+    Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default);
 }

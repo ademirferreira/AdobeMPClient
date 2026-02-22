@@ -177,4 +177,16 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
         return await SendAsync<Subscriptions>(request, ct).ConfigureAwait(false);
     }
+
+    public async Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = SubscriptionRoutes.GetById(_adobeSettings.BaseUrl, customerId, subscriptionId);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
+    }
 }
