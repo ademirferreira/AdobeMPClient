@@ -13,4 +13,8 @@ public class CustomerRoutes
         => new RouteBuilder(CustomerBaseTemplate)
             .WithRouteValue("customerId", customerId)
             .Build(baseUrl);
+
+    public static string Create(string baseUrl)
+        => new RouteBuilder(CustomersTemplate)
+            .Build(baseUrl);
 }

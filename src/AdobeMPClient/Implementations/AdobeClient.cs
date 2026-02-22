@@ -2,6 +2,7 @@
 using AdobeMPClient.Interfaces;
 using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
+using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Routes;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Options;
@@ -30,6 +31,20 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);
+
+        return await SendAsync<CustomerResponse>(request, ct).ConfigureAwait(false);
+    }
+    public async Task<Result<CustomerResponse>> CreateCustomerAsync(CreateCustomer createCustomer, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = CustomerRoutes.Create(_adobeSettings.BaseUrl);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        request.Content = JsonContent.Create(createCustomer, options: JsonOptions);
 
         return await SendAsync<CustomerResponse>(request, ct).ConfigureAwait(false);
     }
@@ -119,4 +134,5 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
             return Result<T>.Failure(error, 502);
         }
     }
+
 }
