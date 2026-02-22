@@ -3,6 +3,7 @@ using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Subscriptions;
+using AdobeMPClient.Models.Subscriptions.Request;
 
 namespace AdobeMPClient.Interfaces;
 
@@ -15,4 +16,6 @@ public interface IAdobeClient
 
     Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default);
     Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default);
+    Task<Result<Subscription>> CreateSubscriptionAsync(string customerId, CreateSubscription createSubscription, CancellationToken ct = default);
+
 }
