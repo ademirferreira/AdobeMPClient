@@ -25,4 +25,10 @@ public static class SubscriptionRoutes
             .WithRouteValue("customerId", customerId)
             .Build(baseUrl);
 
+    public static string Update(string baseUrl, string customerId, string subscriptionId)
+        => new RouteBuilder(SubscriptionByIdTemplate)
+            .WithRouteValue("customerId", customerId)
+            .WithRouteValue("subscriptionId", subscriptionId)
+            .Build(baseUrl);
+
 }

@@ -17,5 +17,6 @@ public interface IAdobeClient
     Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default);
     Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default);
     Task<Result<Subscription>> CreateSubscriptionAsync(string customerId, CreateSubscription createSubscription, CancellationToken ct = default);
+    Task<Result<Subscription>> UpdateSubscriptionAsync(string customerId, string subscriptionId, UpdateSubscription updateSubscription, CancellationToken ct = default);
 
 }

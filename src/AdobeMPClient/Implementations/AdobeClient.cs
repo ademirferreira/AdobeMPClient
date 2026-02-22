@@ -201,4 +201,17 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         request.Content = JsonContent.Create(createSubscription, options: JsonOptions);
         return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
     }
+
+    public async Task<Result<Subscription>> UpdateSubscriptionAsync(string customerId, string subscriptionId, UpdateSubscription updateSubscription, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = SubscriptionRoutes.Update(_adobeSettings.BaseUrl, customerId, subscriptionId);
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        request.Content = JsonContent.Create(updateSubscription, options: JsonOptions);
+        return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
+    }
 }
