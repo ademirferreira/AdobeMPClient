@@ -1,5 +1,14 @@
-﻿namespace AdobeMPClient.Interfaces;
+﻿using AdobeMPClient.Models.Common;
+using AdobeMPClient.Models.Customer;
+using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.PendingLicenses;
+
+namespace AdobeMPClient.Interfaces;
 
 public interface IAdobeClient
 {
+    Task<Result<CustomerResponse>> GetCustomerAsync(string customerId, CancellationToken ct = default);
+    Task<Result<CustomerResponse>> CreateCustomerAsync(CreateCustomer createCustomer, CancellationToken ct = default);
+    Task<Result<CustomerResponse>> UpdateCustomerAsync(string customerId, UpdateCustomer updateCustomer, CancellationToken ct = default);
+    Task<Result<PendingLicense>> GetCustomerOpenAcquisitionsAsync(string customerId, CancellationToken ct = default);
 }
