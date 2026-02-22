@@ -135,4 +135,18 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         }
     }
 
+    public async Task<Result<CustomerResponse>> UpdateCustomerAsync(string customerId, UpdateCustomer updateCustomer, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = CustomerRoutes.Update(_adobeSettings.BaseUrl, customerId);
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        request.Content = JsonContent.Create(updateCustomer, options: JsonOptions);
+
+        return await SendAsync<CustomerResponse>(request, ct).ConfigureAwait(false);
+    }
 }

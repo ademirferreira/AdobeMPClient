@@ -17,4 +17,9 @@ public class CustomerRoutes
     public static string Create(string baseUrl)
         => new RouteBuilder(CustomersTemplate)
             .Build(baseUrl);
+
+    public static string Update(string baseUrl, string customerId)
+        => new RouteBuilder(CustomerBaseTemplate)
+            .WithRouteValue("customerId", customerId)
+            .Build(baseUrl);
 }
