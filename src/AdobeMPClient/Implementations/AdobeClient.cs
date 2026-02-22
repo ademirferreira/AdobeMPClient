@@ -4,6 +4,7 @@ using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.PendingLicenses;
+using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Routes;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Options;
@@ -163,5 +164,17 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         SetHeaders(request);
 
         return await SendAsync<PendingLicense>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = SubscriptionRoutes.GetAll(_adobeSettings.BaseUrl, customerId);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<Subscriptions>(request, ct).ConfigureAwait(false);
     }
 }
