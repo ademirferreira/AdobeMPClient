@@ -21,4 +21,17 @@ public static class UriExtensions
     {
         return value.HasValue ? url.AddQueryParam(key, value.ToString()!.ToLower()) : url;
     }
+
+    public static string AddQueryParam(this string url, string key, IEnumerable<string>? values)
+    {
+        if (values == null || !values.Any())
+            return url;
+
+        foreach (var value in values)
+        {
+            url = url.AddQueryParam(key, value);
+        }
+
+        return url;
+    }
 }

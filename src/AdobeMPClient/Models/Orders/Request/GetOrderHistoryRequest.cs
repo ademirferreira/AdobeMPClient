@@ -11,7 +11,7 @@ public class GetOrderHistoryRequest
     public string? ResellerId { get; set; }
 
     [FromQuery(Name ="status")]
-    public string? Status { get; set; }
+    public string[]? Status { get; set; }
 
     [FromQuery(Name ="reference-order-id")]
     public string? ReferenceOrderId { get; set; }
