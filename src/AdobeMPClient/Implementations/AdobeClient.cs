@@ -7,12 +7,12 @@ using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
+using AdobeMPClient.Models.Reseller;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
 using AdobeMPClient.Routes;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Options;
-using System.Collections;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -279,5 +279,18 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         SetHeaders(request);
         request.Content = JsonContent.Create(updateOrder, options: JsonOptions);
         return await SendAsync<Order>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Reseller>> GetResellerAsync(string resellerId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = ResellerRoutes.Get(_adobeSettings.BaseUrl, resellerId);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<Reseller>(request, ct).ConfigureAwait(false);
     }
 }
