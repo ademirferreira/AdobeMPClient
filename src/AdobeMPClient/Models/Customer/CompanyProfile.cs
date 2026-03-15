@@ -2,10 +2,8 @@
 
 namespace AdobeMPClient.Models.Customer;
 
-public class CompanyProfile
+public class CompanyProfile : CompanyBase
 {
-    [JsonPropertyName("companyName")]
-    public string CompanyName { get; set; } = string.Empty;
     [JsonPropertyName("preferredLanguage")]
     public string PreferredLanguage { get; set; } = string.Empty;
     [JsonPropertyName("marketSegment")]
