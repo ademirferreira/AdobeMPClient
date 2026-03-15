@@ -4,11 +4,10 @@ namespace AdobeMPClient.Routes;
 
 public class CustomerRoutes
 {
-    private const string Version = "v3";
 
-    private const string CustomerBaseTemplate = $"{Version}/customers/{{customerId}}";
-    private const string CustomersTemplate = $"{Version}/customers";
-    private const string OpenAcquisitionsTemplate = $"{Version}/customers/{{customerId}}/open-acquisitions";
+    private const string CustomerBaseTemplate = $"{AdobeApiVersion.V3}/customers/{{customerId}}";
+    private const string CustomersTemplate = $"{AdobeApiVersion.V3}/customers";
+    private const string OpenAcquisitionsTemplate = $"{AdobeApiVersion.V3}/customers/{{customerId}}/open-acquisitions";
 
     public static string Get(string baseUrl, string customerId)
         => new RouteBuilder(CustomerBaseTemplate)

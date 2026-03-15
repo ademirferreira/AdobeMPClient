@@ -1,6 +1,8 @@
 ﻿using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.Orders;
+using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
@@ -19,4 +21,9 @@ public interface IAdobeClient
     Task<Result<Subscription>> CreateSubscriptionAsync(string customerId, CreateSubscription createSubscription, CancellationToken ct = default);
     Task<Result<Subscription>> UpdateSubscriptionAsync(string customerId, string subscriptionId, UpdateSubscription updateSubscription, CancellationToken ct = default);
 
+    Task<Result<OrderHistory>> GetOrderHistoryAsync(string customerId, GetOrderHistoryRequest? parameters = null, CancellationToken ct = default);
+
+    Task<Result<Order>> GetOrderByIdAsync(string customerId, string orderId, bool? fetchPrice = null, CancellationToken ct = default);
+    Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, CancellationToken ct = default);
+    Task<Result<Order>> UpdateOrderAsync(string customerId, string orderId, UpdateOrder updateOrder, CancellationToken ct = default);
 }

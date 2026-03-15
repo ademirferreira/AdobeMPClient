@@ -1,14 +1,18 @@
 ﻿using AdobeMPClient.Configuration;
+using AdobeMPClient.Extensions;
 using AdobeMPClient.Interfaces;
 using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.Orders;
+using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
 using AdobeMPClient.Routes;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Options;
+using System.Collections;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -85,7 +89,7 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
             if (!response.IsSuccessStatusCode)
             {
-                var adobeError = await response.Content.ReadFromJsonAsync<Error>(cancellationToken: ct).ConfigureAwait(false)
+                var adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
                                ?? new Error { Message = "Erro desconhecido" };
 
                 return Result<T>.Failure(adobeError, (int)response.StatusCode);
@@ -137,8 +141,6 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
         return await SendAsync<CustomerResponse>(request, ct).ConfigureAwait(false);
     }
-
-   
 
     public async Task<Result<CustomerResponse>> UpdateCustomerAsync(string customerId, UpdateCustomer updateCustomer, CancellationToken ct = default)
     {
@@ -213,5 +215,69 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
         request.Content = JsonContent.Create(updateSubscription, options: JsonOptions);
         return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<OrderHistory>> GetOrderHistoryAsync(string customerId, GetOrderHistoryRequest? parameters = null, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = OrderRoutes.GetAll(_adobeSettings.BaseUrl, customerId);
+
+        if(parameters != null)
+        {
+            requestUri = requestUri
+            .AddQueryParam("order-type", parameters.OrderType)
+            .AddQueryParam("reseller-id", parameters.ResellerId)
+            .AddQueryParam("status", parameters.Status)
+            .AddQueryParam("reference-order-id", parameters.ReferenceOrderId)
+            .AddQueryParam("offer-id", parameters.OfferId)
+            .AddQueryParam("start-date", parameters.StartDate)
+            .AddQueryParam("end-date", parameters.EndDate)
+            .AddQueryParam("limit", parameters.Limit)
+            .AddQueryParam("offset", parameters.OffSet)
+            .AddQueryParam("fetch-price", parameters.FetchPrice);
+        }
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<OrderHistory>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Order>> GetOrderByIdAsync(string customerId, string orderId, bool? fetchPrice = null, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = OrderRoutes.GetById(_adobeSettings.BaseUrl, customerId, orderId)
+            .AddQueryParam("fetch-price", fetchPrice);
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<Order>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId);
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        request.Content = JsonContent.Create(createOrder, options: JsonOptions);
+        return await SendAsync<Order>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Order>> UpdateOrderAsync(string customerId,string orderId, UpdateOrder updateOrder, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = OrderRoutes.Update(_adobeSettings.BaseUrl, customerId, orderId);
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        request.Content = JsonContent.Create(updateOrder, options: JsonOptions);
+        return await SendAsync<Order>(request, ct).ConfigureAwait(false);
     }
 }

@@ -2,7 +2,7 @@
 
 public sealed class RouteBuilder
 {
-    private string _template;
+    private readonly string _template;
     private readonly Dictionary<string, string> _routeValues = new();
 
     public RouteBuilder(string template)

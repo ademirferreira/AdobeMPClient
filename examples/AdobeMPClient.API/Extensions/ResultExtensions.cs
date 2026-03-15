@@ -12,6 +12,7 @@ public static class ResultExtensions
             {
                 (int)HttpStatusCode.OK => TypedResults.Ok(data),
                 (int)HttpStatusCode.Created => TypedResults.Created("", data),
+                (int)HttpStatusCode.Accepted => TypedResults.Accepted<T>("", data),
                 _ => TypedResults.StatusCode(statusCode)
             },
             (error, statusCode) => statusCode switch
@@ -33,6 +34,7 @@ public static class ResultExtensions
             {
                 (int)HttpStatusCode.OK => TypedResults.Ok(data),
                 (int)HttpStatusCode.Created => TypedResults.Created(locationFactory(data), data),
+                (int)HttpStatusCode.Accepted => TypedResults.Accepted(locationFactory(data), data),
                 _ => TypedResults.StatusCode(statusCode)
             },
             (error, statusCode) => statusCode switch
