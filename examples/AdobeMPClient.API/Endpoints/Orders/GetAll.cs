@@ -16,11 +16,11 @@ public class GetAll : IEndpoint
             ILogger<GetAll> logger,
             CancellationToken ct = default) =>
         {
-            logger.LogInformation("Getting subscriptions for customer {CustomerId}", customerId);
+            logger.LogInformation("Getting orders for customer {CustomerId}", customerId);
 
-            var result = await client.GetOrderHistory(customerId, parameters, ct);
+            var result = await client.GetOrderHistoryAsync(customerId, parameters, ct);
 
-            logger.LogInformation("Subscriptions retrieved for customer {CustomerId}", customerId);
+            logger.LogInformation("Orders retrieved for customer {CustomerId}", customerId);
             return result.ToResult();
         })
         .WithName("GetOrderHistory")
