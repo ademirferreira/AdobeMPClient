@@ -24,13 +24,13 @@ public static class UriExtensions
 
     public static string AddQueryParam(this string url, string key, IEnumerable<string>? values)
     {
-        if (values == null || !values.Any())
+        var list = values?.ToList();
+
+        if (list is not { Count: > 0 })
             return url;
 
-        foreach (var value in values)
-        {
+        foreach (var value in list)
             url = url.AddQueryParam(key, value);
-        }
 
         return url;
     }
