@@ -15,4 +15,8 @@ public static class ResellerRoutes
     public static string GetAll(string baseUrl)
         => new RouteBuilder(ResellersTemplate)
             .Build(baseUrl);
+
+    public static string Create(string baseUrl)
+        => new RouteBuilder(ResellersTemplate)
+            .Build(baseUrl);
 }

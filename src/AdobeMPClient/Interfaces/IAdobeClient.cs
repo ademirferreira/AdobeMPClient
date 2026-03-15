@@ -31,4 +31,6 @@ public interface IAdobeClient
 
     Task<Result<Reseller>> GetResellerAsync(string resellerId, CancellationToken ct = default);
     Task<Result<Resellers>> GetResellersAsync(GetResellersList? parameters = null, CancellationToken ct = default);
+
+    Task<Result<Reseller>> CreateResellerAsync(CreateReseller createReseller, CancellationToken ct = default);
 }
