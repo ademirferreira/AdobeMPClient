@@ -89,7 +89,7 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
             if (!response.IsSuccessStatusCode)
             {
-                var adobeError = await response.Content.ReadFromJsonAsync<Error>(cancellationToken: ct).ConfigureAwait(false)
+                var adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
                                ?? new Error { Message = "Erro desconhecido" };
 
                 return Result<T>.Failure(adobeError, (int)response.StatusCode);
@@ -256,6 +256,28 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);
 
+        return await SendAsync<Order>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId);
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        request.Content = JsonContent.Create(createOrder, options: JsonOptions);
+        return await SendAsync<Order>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Order>> UpdateOrderAsync(string customerId,string orderId, UpdateOrder updateOrder, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = OrderRoutes.Update(_adobeSettings.BaseUrl, customerId, orderId);
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        request.Content = JsonContent.Create(updateOrder, options: JsonOptions);
         return await SendAsync<Order>(request, ct).ConfigureAwait(false);
     }
 }
