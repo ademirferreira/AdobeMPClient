@@ -3,10 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace AdobeMPClient.Models.Reseller;
 
-public class ResellerProfile
+public class ResellerProfile : CompanyBase
 {
-    [JsonPropertyName("companyName")]
-    public string CompanyName { get; set; } = string.Empty;
 
     [JsonPropertyName("preferredLanguage")]
     public string PreferredLanguage { get; set; } = string.Empty;

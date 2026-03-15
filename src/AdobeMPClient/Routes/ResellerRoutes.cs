@@ -11,4 +11,8 @@ public static class ResellerRoutes
         => new RouteBuilder(ResellerBaseTemplate)
             .WithRouteValue("resellerId", resellerId)
             .Build(baseUrl);
+
+    public static string GetAll(string baseUrl)
+        => new RouteBuilder(ResellersTemplate)
+            .Build(baseUrl);
 }

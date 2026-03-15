@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AdobeMPClient.Models;
+namespace AdobeMPClient.Models.Orders;
 
 public class Promotion
 {

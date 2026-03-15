@@ -28,7 +28,7 @@ public sealed record GetOrderHistoryRequest
     [FromQuery(Name ="limit")]
     public int? Limit { get; init; }
 
-    [FromQuery(Name = "offinit")]
+    [FromQuery(Name = "offset")]
     public int? OffSet { get; init; }
 
     [FromQuery(Name = "fetch-price")]

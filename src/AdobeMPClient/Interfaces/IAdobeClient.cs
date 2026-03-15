@@ -5,6 +5,7 @@ using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Reseller;
+using AdobeMPClient.Models.Reseller.Request;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
 
@@ -29,4 +30,5 @@ public interface IAdobeClient
     Task<Result<Order>> UpdateOrderAsync(string customerId, string orderId, UpdateOrder updateOrder, CancellationToken ct = default);
 
     Task<Result<Reseller>> GetResellerAsync(string resellerId, CancellationToken ct = default);
+    Task<Result<Resellers>> GetResellersAsync(GetResellersList? parameters = null, CancellationToken ct = default);
 }

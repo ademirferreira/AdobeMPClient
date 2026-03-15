@@ -8,6 +8,7 @@ using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Reseller;
+using AdobeMPClient.Models.Reseller.Request;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
 using AdobeMPClient.Routes;
@@ -292,5 +293,26 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         SetHeaders(request);
 
         return await SendAsync<Reseller>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Resellers>> GetResellersAsync(GetResellersList? parameters,CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = ResellerRoutes.GetAll(_adobeSettings.BaseUrl);
+
+        if(parameters != null)
+        {
+            requestUri = requestUri
+            .AddQueryParam("status", parameters.Status)
+            .AddQueryParam("limit", parameters.Limit)
+            .AddQueryParam("offset", parameters.OffSet)
+            .AddQueryParam("company-name", parameters.CompanyName)
+            .AddQueryParam("sort-by", parameters.SortBy)
+            .AddQueryParam("order-by", parameters.OrderBy);
+        }
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        return await SendAsync<Resellers>(request, ct).ConfigureAwait(false);
     }
 }

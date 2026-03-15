@@ -15,11 +15,11 @@ public class GetById : IEndpoint
             ILogger<GetById> logger,
             CancellationToken ct = default) =>
         {
-            logger.LogInformation("Getting customer {CustomerId}", resellerId);
+            logger.LogInformation("Getting reseller {ResellerId}", resellerId);
 
             var result = await client.GetResellerAsync(resellerId, ct);
 
-            logger.LogInformation("Customer {CustomerId} retrieved successfully", resellerId);
+            logger.LogInformation("Reseller {ResellerId} retrieved successfully", resellerId);
             return result.ToResult();
         })
         .WithName("GetResellerById")
