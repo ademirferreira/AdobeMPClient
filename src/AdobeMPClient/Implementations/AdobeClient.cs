@@ -3,6 +3,8 @@ using AdobeMPClient.Interfaces;
 using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.Orders;
+using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
@@ -138,8 +140,6 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         return await SendAsync<CustomerResponse>(request, ct).ConfigureAwait(false);
     }
 
-   
-
     public async Task<Result<CustomerResponse>> UpdateCustomerAsync(string customerId, UpdateCustomer updateCustomer, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync().ConfigureAwait(false);
@@ -213,5 +213,17 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
 
         request.Content = JsonContent.Create(updateSubscription, options: JsonOptions);
         return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<OrderHistory>> GetOrderHistory(string customerId, GetOrderHistoryRequest? parameters = null, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+
+        var requestUri = OrderRoutes.GetAll(_adobeSettings.BaseUrl, customerId, parameters);
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        return await SendAsync<OrderHistory>(request, ct).ConfigureAwait(false);
     }
 }
