@@ -327,4 +327,16 @@ public class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options)
         request.Content = JsonContent.Create(createReseller, options: JsonOptions);
         return await SendAsync<Reseller>(request, ct).ConfigureAwait(false);
     }
+
+    public async Task<Result<Reseller>> UpdateResellerAsync(string resellerId, UpdateReseller updateReseller, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = ResellerRoutes.Update(_adobeSettings.BaseUrl, resellerId);
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        request.Content = JsonContent.Create(updateReseller, options: JsonOptions);
+        return await SendAsync<Reseller>(request, ct).ConfigureAwait(false);
+    }
 }
