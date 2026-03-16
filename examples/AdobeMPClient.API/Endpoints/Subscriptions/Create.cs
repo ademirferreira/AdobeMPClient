@@ -21,8 +21,10 @@ public class Create : IEndpoint
 
             var result = await client.CreateSubscriptionAsync(customerId, createSubscription, ct);
 
-            logger.LogInformation("Subscription created successfully for customer {CustomerId}", customerId);
-            return result.ToResult();
+            return result
+                .OnSuccess(data => logger.LogInformation("Subscription created successfully for customer {CustomerId}", customerId))
+                .OnFailure(error => logger.LogError("Failed to create subscription for customer {CustomerId}. Error: {ErrorMessage}", customerId, error?.Message))
+                .ToResult();
         })
             .WithName("CreateSubscription")
             .WithTags("subscriptions")

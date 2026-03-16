@@ -52,10 +52,10 @@ public partial class AdobeClient
         return await SendAsync<Order>(request, ct).ConfigureAwait(false);
     }
 
-    public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, CancellationToken ct = default)
+    public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, bool? fetchPrice = false, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync().ConfigureAwait(false);
-        var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId);
+        var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId).AddQueryParam("fetch-price", fetchPrice);
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);

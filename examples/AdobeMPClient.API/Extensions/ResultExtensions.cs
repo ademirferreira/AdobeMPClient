@@ -48,4 +48,59 @@ public static class ResultExtensions
             }
         );
     }
+
+
+    public static Result<T> OnSuccess<T>(this Result<T> result, Action<T> onSuccess)
+    {
+        return result.Match(
+            (data, statusCode) =>
+            {
+                onSuccess(data);
+                return result;
+            },
+            (error, statusCode) => result
+        );
+    }
+
+    public static Result<T> OnSuccess<T>(this Result<T> result, Action<T, int> onSuccess)
+    {
+        return result.Match(
+            (data, statusCode) =>
+            {
+                onSuccess(data, statusCode);
+                return result;
+            },
+            (error, statusCode) => result
+        );
+    }
+
+    public static Result<T> OnFailure<T>(this Result<T> result, Action<Error?> onFailure)
+    {
+        return result.Match(
+            (data, statusCode) => result,
+            (error, statusCode) =>
+            {
+                onFailure(error);
+                return result;
+            }
+        );
+    }
+
+    public static Result<T> OnFailure<T>(this Result<T> result, Action<Error?, int> onFailure)
+    {
+        return result.Match(
+            (data, statusCode) => result,
+            (error, statusCode) =>
+            {
+                onFailure(error, statusCode);
+                return result;
+            }
+        );
+    }
+
+    public static Result<T> Finally<T>(this Result<T> result, Action finally_)
+    {
+        finally_();
+        return result;
+    }
 }

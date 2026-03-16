@@ -1,7 +1,5 @@
 ﻿using AdobeMPClient.API.Extensions;
 using AdobeMPClient.Interfaces;
-using AdobeMPClient.Models.Common;
-using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.Reseller;
 using AdobeMPClient.Models.Reseller.Request;
 
@@ -20,19 +18,10 @@ public class Create : IEndpoint
             var result = await client.CreateResellerAsync(request, ct);
 
             logger.LogInformation("Creating a new reseller");
-            return result.Match<IResult>(
-                (data, statusCode) =>
-                {
-                    logger.LogInformation("Reseller {ResellerId} created successfully", data.ResellerId);
-                    return TypedResults.Created($"/api/resellers/{data.ResellerId}", data);
-                },
-                (error, statusCode) =>
-                {
-                    logger.LogWarning("Failed to create reseller: {Error}", error?.Message);
-                    var errorResult = Result<CreateCustomer>.Failure(error!, statusCode);
-                    return errorResult.ToResult();
-                }
-            );
+            return result
+                .OnSuccess(data => logger.LogInformation("Reseller {ResellerId} created successfully", data.ResellerId))
+                .OnFailure(error => logger.LogWarning("Failed to create reseller: {Error}", error?.Message))
+                .ToResult(data => $"/api/resellers/{data.ResellerId}");
         }).WithName("CreateReseller")
             .WithTags("resellers")
             .WithSummary("Create a new reseller")
