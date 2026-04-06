@@ -1,6 +1,5 @@
 ﻿using AdobeMPClient.API.Extensions;
 using AdobeMPClient.Interfaces;
-using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
 using Microsoft.AspNetCore.Mvc;
@@ -21,19 +20,10 @@ public class Create : IEndpoint
 
             var result = await adobeClient.CreateCustomerAsync(createCustomer, ct);
 
-            return result.Match<IResult>(
-                (data, statusCode) =>
-                {
-                    logger.LogInformation("Customer {CustomerId} created successfully", data.CustomerId);
-                    return TypedResults.Created($"/api/customers/{data.CustomerId}", data);
-                },
-                (error, statusCode) =>
-                {
-                    logger.LogWarning("Failed to create customer: {Error}", error?.Message);
-                    var errorResult = Result<CreateCustomer>.Failure(error!, statusCode);
-                    return errorResult.ToResult();
-                }
-            );
+            return result
+                .OnSuccess(data => logger.LogInformation("Customer {CustomerId} created successfully", data.CustomerId))
+                .OnFailure(error => logger.LogWarning("Failed to create customer: {Error}", error?.Message))
+                .ToResult(data => $"/api/customers/{data.CustomerId}");
         })
             .WithName("CreateCustomer")
             .WithTags("customers")
