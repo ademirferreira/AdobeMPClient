@@ -4,6 +4,7 @@ using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
+using AdobeMPClient.Models.Recommendations;
 using AdobeMPClient.Models.Reseller;
 using AdobeMPClient.Models.Reseller.Request;
 using AdobeMPClient.Models.Subscriptions;
@@ -34,4 +35,6 @@ public interface IAdobeClient
 
     Task<Result<Reseller>> CreateResellerAsync(CreateReseller createReseller, CancellationToken ct = default);
     Task<Result<Reseller>> UpdateResellerAsync(string resellerId, UpdateReseller updateReseller, CancellationToken ct = default);
+
+    Task<Result<RecommendationsResponse>> FetchRecommendationsAsync(FetchRecommendations fetchRecommendations, CancellationToken ct = default);
 }
