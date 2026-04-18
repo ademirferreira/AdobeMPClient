@@ -1,4 +1,5 @@
-﻿using AdobeMPClient.Models.Common;
+﻿using AdobeMPClient.Extensions;
+using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
 using AdobeMPClient.Routes;
@@ -54,6 +55,21 @@ public partial class AdobeClient
         SetHeaders(request);
 
         request.Content = JsonContent.Create(updateSubscription, options: JsonOptions);
+        return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<Subscription>> RemoveFlexDiscountAsync(string customerId, string subscriptionId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = SubscriptionRoutes.ResetDiscount(_adobeSettings.BaseUrl, customerId, subscriptionId)
+            .AddQueryParam("reset-flex-discount-codes", true);
+        
+        var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
+
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+
+        request.Content = JsonContent.Create(new {}, options: JsonOptions);
         return await SendAsync<Subscription>(request, ct).ConfigureAwait(false);
     }
 }
