@@ -6,6 +6,7 @@ using AdobeMPClient.Models.Notifications;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
+using AdobeMPClient.Models.PriceList;
 using AdobeMPClient.Models.Recommendations;
 using AdobeMPClient.Models.Reseller;
 using AdobeMPClient.Models.Reseller.Request;
@@ -45,4 +46,6 @@ public interface IAdobeClient
     Task<Result<NotificationResponse>> GetNotificationsAsync(NotificationRequest? parameters = null, CancellationToken ct = default);
 
     Task<Result<FlexDiscountResponse>> FetchFlexDiscountsAsync(FlexDiscountRequest? parameters = null, CancellationToken ct = default);
+
+    Task<Result<PriceListResponse>> FetchPriceListAsync(PriceListRequest? parameters = null, int? limit = null, int? offset = null, CancellationToken ct = default);
 }
