@@ -1,6 +1,7 @@
 ﻿using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.Notifications;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
 using AdobeMPClient.Models.PendingLicenses;
@@ -37,4 +38,6 @@ public interface IAdobeClient
     Task<Result<Reseller>> UpdateResellerAsync(string resellerId, UpdateReseller updateReseller, CancellationToken ct = default);
 
     Task<Result<RecommendationsResponse>> FetchRecommendationsAsync(FetchRecommendations fetchRecommendations, CancellationToken ct = default);
+
+    Task<Result<NotificationResponse>> GetNotificationsAsync(NotificationRequest? parameters = null, CancellationToken ct = default);
 }
