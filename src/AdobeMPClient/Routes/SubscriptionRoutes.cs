@@ -30,4 +30,10 @@ public static class SubscriptionRoutes
             .WithRouteValue("subscriptionId", subscriptionId)
             .Build(baseUrl);
 
+    public static string ResetDiscount(string baseUrl, string customerId, string subscriptionId)
+        => new RouteBuilder(SubscriptionByIdTemplate)
+            .WithRouteValue("customerId", customerId)
+            .WithRouteValue("subscriptionId", subscriptionId)
+            .Build(baseUrl);
+
 }

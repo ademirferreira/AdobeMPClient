@@ -1,6 +1,8 @@
-﻿using AdobeMPClient.Models.Common;
+﻿using AdobeMPClient.Extensions;
+using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.FlexDiscounts;
 using AdobeMPClient.Models.PendingLicenses;
 using AdobeMPClient.Routes;
 using Duende.IdentityModel.Client;
@@ -62,5 +64,20 @@ public partial class AdobeClient
         SetHeaders(request);
 
         return await SendAsync<PendingLicense>(request, ct).ConfigureAwait(false);
+    }
+
+    public async Task<Result<FlexDiscountResponse>> GetCustomerFlexDiscountsAsync(string customerId, int? limit, int? offset, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = CustomerRoutes.FlexDiscounts(_adobeSettings.BaseUrl, customerId);
+
+        requestUri = requestUri
+            .AddQueryParam("limit", limit)
+            .AddQueryParam("offset", offset);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        return await SendAsync<FlexDiscountResponse>(request, ct).ConfigureAwait(false);
     }
 }

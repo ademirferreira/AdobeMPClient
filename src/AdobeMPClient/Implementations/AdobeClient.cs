@@ -94,7 +94,6 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
 
                 return Result<T>.Failure(adobeError, (int)response.StatusCode);
             }
-
             var result = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct).ConfigureAwait(false);
 
             return Result<T>.Success(result!, (int)response.StatusCode);

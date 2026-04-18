@@ -1,6 +1,7 @@
 ﻿using AdobeMPClient.Models.Common;
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
+using AdobeMPClient.Models.FlexDiscounts;
 using AdobeMPClient.Models.Notifications;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
@@ -19,11 +20,13 @@ public interface IAdobeClient
     Task<Result<CustomerResponse>> CreateCustomerAsync(CreateCustomer createCustomer, CancellationToken ct = default);
     Task<Result<CustomerResponse>> UpdateCustomerAsync(string customerId, UpdateCustomer updateCustomer, CancellationToken ct = default);
     Task<Result<PendingLicense>> GetCustomerOpenAcquisitionsAsync(string customerId, CancellationToken ct = default);
+    Task<Result<FlexDiscountResponse>> GetCustomerFlexDiscountsAsync(string customerId, int? limit, int? offset, CancellationToken ct = default);
 
     Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default);
     Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default);
     Task<Result<Subscription>> CreateSubscriptionAsync(string customerId, CreateSubscription createSubscription, CancellationToken ct = default);
     Task<Result<Subscription>> UpdateSubscriptionAsync(string customerId, string subscriptionId, UpdateSubscription updateSubscription, CancellationToken ct = default);
+    Task<Result<Subscription>> RemoveFlexDiscountAsync(string customerId, string subscriptionId, CancellationToken ct = default);
 
     Task<Result<OrderHistory>> GetOrderHistoryAsync(string customerId, GetOrderHistoryRequest? parameters = null, CancellationToken ct = default);
 
@@ -40,4 +43,6 @@ public interface IAdobeClient
     Task<Result<RecommendationsResponse>> FetchRecommendationsAsync(FetchRecommendations fetchRecommendations, CancellationToken ct = default);
 
     Task<Result<NotificationResponse>> GetNotificationsAsync(NotificationRequest? parameters = null, CancellationToken ct = default);
+
+    Task<Result<FlexDiscountResponse>> FetchFlexDiscountsAsync(FlexDiscountRequest? parameters = null, CancellationToken ct = default);
 }
