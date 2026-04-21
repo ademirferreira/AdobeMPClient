@@ -57,4 +57,5 @@ public interface IAdobeClient
 
     Task<Result<PreviewOffer>> PreviewTransfer(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
     Task<Result<TransferResponse>> CreateTransfer(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
+    Task<Result<TransferResponse>> GetTransfer(string membershipId, string transferId, CancellationToken ct = default);
 }

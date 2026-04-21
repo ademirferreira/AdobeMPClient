@@ -15,4 +15,10 @@ public static class MembershipRoutes
     => new RouteBuilder($"{MembershipTemplate}/{{membershipId}}/transfers")
         .WithRouteValue("membershipId", membershipId)
         .Build(baseUrl);
+
+    public static string TransferDetails(string baseUrl, string membershipId, string transferId)
+    => new RouteBuilder($"{MembershipTemplate}/{{membershipId}}/transfers/{{transferId}}")
+        .WithRouteValue("membershipId", membershipId)
+        .WithRouteValue("transferId", transferId)
+        .Build(baseUrl);
 }

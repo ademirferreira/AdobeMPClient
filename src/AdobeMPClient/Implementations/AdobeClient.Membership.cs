@@ -41,4 +41,14 @@ public partial class AdobeClient
         SetHeaders(request);
         return await SendAsync<TransferResponse>(request, ct).ConfigureAwait(false);
     }
+
+    public async Task<Result<TransferResponse>> GetTransfer(string membershipId, string transferId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = MembershipRoutes.TransferDetails(_adobeSettings.BaseUrl, membershipId, transferId);
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        return await SendAsync<TransferResponse>(request, ct).ConfigureAwait(false);
+    }
 }
