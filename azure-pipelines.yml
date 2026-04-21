@@ -6,18 +6,25 @@ trigger:
   tags:
     include:
       - v*
+
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  buildConfiguration: 'Release'
-  projectPath: 'src/**/*.csproj'
-  feedName: 'PersonalFeed'
-
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
-    VersionFromTag: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
-  ${{ else }}:
-    VersionFromTag: '0.0.1-build.$(Build.BuildId)'
+  - group: Variable Packages
+  - name: buildConfiguration
+    value: 'Release'
+  - name: projectPath
+    value: 'src/**/*.csproj'
+  - name: feedName
+    value: 'PersonalFeed'
+  
+  - name: VersionFromTag
+    value: '0.0.1-build.$(Build.BuildId)'
+  
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+    - name: VersionFromTag
+      value: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
 
 steps:
   - task: UseDotNet@2
@@ -54,7 +61,15 @@ steps:
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'VersionFromTag'
 
-  - task: DotNetCoreCLI@2
+  - task: NuGetAuthenticate@0
+    displayName: 'Autenticar NuGet (Azure Artifacts)'
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranchName'], 'dev'))
+
+  - script: |
+      dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
+        --source "https://ademirferreira.pkgs.visualstudio.com/AdobeMPClient/_packaging/PersonalFeed/nuget/v3/index.json" \
+        --api-key az \
+        --skip-duplicate
     displayName: 'Publicar no Azure Artifacts (Push)'
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranchName'], 'dev'))
     inputs:
@@ -64,11 +79,12 @@ steps:
       publishVstsFeed: 'AdobeMPClient/$(feedName)'
       allowPackageConflicts: true
 
-  - task: DotNetCoreCLI@2
+  - script: |
+      dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
+        --source https://api.nuget.org/v3/index.json \
+        --api-key "$NUGET_KEY" \
+        --skip-duplicate
     displayName: 'Publicar no NuGet.org'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-      nuGetFeedType: 'external'
-      publishFeedCredentials: 'NuGetOrg'
+    env:
+      NUGET_KEY: $(NUGET_API_KEY)
