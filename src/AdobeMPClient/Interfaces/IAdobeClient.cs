@@ -12,6 +12,7 @@ using AdobeMPClient.Models.Reseller;
 using AdobeMPClient.Models.Reseller.Request;
 using AdobeMPClient.Models.Subscriptions;
 using AdobeMPClient.Models.Subscriptions.Request;
+using AdobeMPClient.Models.Transfers;
 
 namespace AdobeMPClient.Interfaces;
 
@@ -48,4 +49,8 @@ public interface IAdobeClient
     Task<Result<FlexDiscountResponse>> FetchFlexDiscountsAsync(FlexDiscountRequest? parameters = null, CancellationToken ct = default);
 
     Task<Result<PriceListResponse>> FetchPriceListAsync(PriceListRequest? parameters = null, int? limit = null, int? offset = null, CancellationToken ct = default);
+
+    Task<Result<ResellerTransferResponse>> CreateResellerChangeAsync(ResellerTransferRequest resellerChangeRequest, CancellationToken ct = default);
+
+    Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default);
 }

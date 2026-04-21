@@ -9,5 +9,6 @@ public class Discount
     [JsonPropertyName("level")]
     public string Level { get; set; } = string.Empty;
     [JsonPropertyName("discountCode")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? DiscountCode { get; set; }
 }
