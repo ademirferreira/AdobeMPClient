@@ -54,21 +54,22 @@ steps:
       versioningScheme: 'byEnvVar'
       versionEnvVar: 'VersionFromTag'
 
-  - task: DotNetCoreCLI@2
+  - task: NuGetAuthenticate@0
+    displayName: 'Autenticar NuGet (Azure Artifacts)'
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranchName'], 'dev'))
+
+  - script: |
+      dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
+        --source "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_packaging/$(feedName)/nuget/v3/index.json" \
+        --api-key az \
+        --skip-duplicate
     displayName: 'Publicar no Azure Artifacts (Push)'
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranchName'], 'dev'))
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: 'AdobeMPClient/$(feedName)'
-      allowPackageConflicts: true
 
-  - task: DotNetCoreCLI@2
+  - script: |
+      dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
+        --source https://api.nuget.org/v3/index.json \
+        --api-key $(NUGET_API_KEY) \
+        --skip-duplicate
     displayName: 'Publicar no NuGet.org'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-      nuGetFeedType: 'external'
-      publishFeedCredentials: 'NuGetOrg'
