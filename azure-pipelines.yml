@@ -72,12 +72,6 @@ steps:
         --skip-duplicate
     displayName: 'Publicar no Azure Artifacts (Push)'
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'), eq(variables['Build.SourceBranchName'], 'dev'))
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: 'AdobeMPClient/$(feedName)'
-      allowPackageConflicts: true
 
   - script: |
       dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
