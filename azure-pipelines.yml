@@ -10,9 +10,15 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  buildConfiguration: 'Release'
-  projectPath: 'src/**/*.csproj'
-  feedName: 'PersonalFeed'
+  - group: Variable Packages
+  - name: buildConfiguration
+    value: 'Release'
+  - name: projectPath
+    value: 'src/**/*.csproj'
+  - name: feedName
+    value: 'PersonalFeed'
+  - name: VersionFromTag
+    value: '0.0.1-build.$(Build.BuildId)'
 
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
     VersionFromTag: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
@@ -60,7 +66,7 @@ steps:
 
   - script: |
       dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
-        --source "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_packaging/$(feedName)/nuget/v3/index.json" \
+        --source "https://ademirferreira.pkgs.visualstudio.com/AdobeMPClient/_packaging/PersonalFeed/nuget/v3/index.json" \
         --api-key az \
         --skip-duplicate
     displayName: 'Publicar no Azure Artifacts (Push)'
@@ -69,7 +75,9 @@ steps:
   - script: |
       dotnet nuget push "$(Build.ArtifactStagingDirectory)/**/*.nupkg" \
         --source https://api.nuget.org/v3/index.json \
-        --api-key $(NUGET_API_KEY) \
+        --api-key "$NUGET_KEY" \
         --skip-duplicate
     displayName: 'Publicar no NuGet.org'
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
+    env:
+      NUGET_KEY: $(NUGET_API_KEY)
