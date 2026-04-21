@@ -2,6 +2,7 @@
 using AdobeMPClient.Models.Customer;
 using AdobeMPClient.Models.Customer.Request;
 using AdobeMPClient.Models.FlexDiscounts;
+using AdobeMPClient.Models.Memberships;
 using AdobeMPClient.Models.Notifications;
 using AdobeMPClient.Models.Orders;
 using AdobeMPClient.Models.Orders.Request;
@@ -53,4 +54,6 @@ public interface IAdobeClient
     Task<Result<ResellerTransferResponse>> CreateResellerChangeAsync(ResellerTransferRequest resellerChangeRequest, CancellationToken ct = default);
 
     Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default);
+
+    Task<Result<PreviewOffer>> PreviewTransfer(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
 }
