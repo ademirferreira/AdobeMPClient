@@ -19,5 +19,15 @@ public partial class AdobeClient
         request.Content = JsonContent.Create(resellerChangeRequest, options: JsonOptions);
         return await SendAsync<ResellerTransferResponse>(request, ct).ConfigureAwait(false);
     }
+
+    public async Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default)
+    {
+        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var requestUri = TransferRoutes.GetReserllerTransfer(_adobeSettings.BaseUrl, transferId);
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.SetBearerToken(token.AccessToken!);
+        SetHeaders(request);
+        return await SendAsync<ResellerTransferDetails>(request, ct).ConfigureAwait(false);
+    }
 }
 

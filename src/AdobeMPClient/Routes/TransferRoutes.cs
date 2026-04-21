@@ -11,4 +11,9 @@ public static class TransferRoutes
         => new RouteBuilder(TransferTemplate)
             .Build(baseUrl);
 
+    public static string GetReserllerTransfer(string baseUrl, string transferId)
+        => new RouteBuilder($"{TransferTemplate}/{{transferId}}")
+        .WithRouteValue("transferId", transferId)
+            .Build(baseUrl);
+
 }

@@ -51,4 +51,6 @@ public interface IAdobeClient
     Task<Result<PriceListResponse>> FetchPriceListAsync(PriceListRequest? parameters = null, int? limit = null, int? offset = null, CancellationToken ct = default);
 
     Task<Result<ResellerTransferResponse>> CreateResellerChangeAsync(ResellerTransferRequest resellerChangeRequest, CancellationToken ct = default);
+
+    Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default);
 }
