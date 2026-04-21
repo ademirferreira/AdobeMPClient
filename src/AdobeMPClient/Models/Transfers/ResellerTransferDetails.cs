@@ -49,8 +49,10 @@ public sealed record ItemTransfer
     public int Quantity { get; init; }
 
     [JsonPropertyName("renewalDate")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime RenewalDate { get; init; }
 
     [JsonPropertyName("currencyCode")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string CurrencyCode { get; init; } = string.Empty;
 }
