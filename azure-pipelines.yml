@@ -5,7 +5,7 @@ trigger:
       - dev
   tags:
     include:
-      - v* # Aciona o pipeline para tags como v1.0.0, v2.1.0-beta
+      - v*
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -17,7 +17,7 @@ variables:
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
     VersionFromTag: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
   ${{ else }}:
-    VersionFromTag: '0.0.1-build.$(Build.BuildId)' # Versão de fallback para dev
+    VersionFromTag: '0.0.1-build.$(Build.BuildId)'
 
 steps:
   - task: UseDotNet@2
