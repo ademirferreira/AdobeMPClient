@@ -6,6 +6,7 @@ trigger:
   tags:
     include:
       - v*
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -17,13 +18,13 @@ variables:
     value: 'src/**/*.csproj'
   - name: feedName
     value: 'PersonalFeed'
+  
   - name: VersionFromTag
     value: '0.0.1-build.$(Build.BuildId)'
-
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
-    VersionFromTag: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
-  ${{ else }}:
-    VersionFromTag: '0.0.1-build.$(Build.BuildId)'
+  
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}:
+    - name: VersionFromTag
+      value: $[ replace(variables['Build.SourceBranchName'], 'v', '') ]
 
 steps:
   - task: UseDotNet@2
