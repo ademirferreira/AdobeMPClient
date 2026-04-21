@@ -6,7 +6,7 @@ namespace AdobeMPClient.Models.Customer.Request;
 public class CreateCustomer
 {
     [JsonPropertyName("resellerId")]
-    public string ResellerId { get; } = "P1000085361";
+    public string ResellerId { get; set; } = string.Empty;
     [JsonPropertyName("externalReferenceId")]
     public string ExternalReferenceId { get; set; } = string.Empty;
     [JsonPropertyName("companyProfile")]
