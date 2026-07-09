@@ -11,6 +11,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAdobeClient(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AdobeSettings>(configuration.GetSection(AdobeSettings.SectionName));
+        services.AddHttpClient("adobeIms");
+        services.AddSingleton<IAdobeTokenProvider, AdobeTokenProvider>();
         services.AddHttpClient<IAdobeClient, AdobeClient>("adobeClient");
 
         return services;
