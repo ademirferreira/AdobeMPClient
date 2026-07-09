@@ -12,7 +12,7 @@ public partial class AdobeClient
     public async Task<Result<PriceListResponse>> FetchPriceListAsync(PriceListRequest? parameters = null, int? limit = null, int? offset = null, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = PriceListRoutes.Fetch(_adobeSettings.BaseUrl);
+        var requestUri = PriceListRoutes.Fetch(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl);
 
         if (parameters != null)
         {

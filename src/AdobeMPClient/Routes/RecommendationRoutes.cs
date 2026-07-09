@@ -1,12 +1,13 @@
-﻿using AdobeMPClient.Extensions;
+using AdobeMPClient.Extensions;
 
 namespace AdobeMPClient.Routes;
 
 public static class RecommendationRoutes
 {
-    private const string RecommendationsTemplate = $"{AdobeApiVersion.V3}/recommendations";
+    private const string RecommendationsTemplate = "{apiVersion}/recommendations";
 
-    public static string Fetch(string baseUrl)
+    public static string Fetch(string apiVersion, string baseUrl)
         => new RouteBuilder(RecommendationsTemplate)
+            .WithRouteValue("apiVersion", apiVersion)
             .Build(baseUrl);
 }

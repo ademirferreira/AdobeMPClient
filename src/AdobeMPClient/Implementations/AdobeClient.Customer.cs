@@ -16,7 +16,7 @@ public partial class AdobeClient
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
-        var requestUri = CustomerRoutes.Get(_adobeSettings.BaseUrl, customerId);
+        var requestUri = CustomerRoutes.Get(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -28,7 +28,7 @@ public partial class AdobeClient
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
-        var requestUri = CustomerRoutes.Create(_adobeSettings.BaseUrl);
+        var requestUri = CustomerRoutes.Create(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl);
 
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -43,7 +43,7 @@ public partial class AdobeClient
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
-        var requestUri = CustomerRoutes.Update(_adobeSettings.BaseUrl, customerId);
+        var requestUri = CustomerRoutes.Update(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -57,7 +57,7 @@ public partial class AdobeClient
     public async Task<Result<PendingLicense>> GetCustomerOpenAcquisitionsAsync(string customerId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = CustomerRoutes.OpenAcquisitions(_adobeSettings.BaseUrl, customerId);
+        var requestUri = CustomerRoutes.OpenAcquisitions(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -69,7 +69,7 @@ public partial class AdobeClient
     public async Task<Result<FlexDiscountResponse>> GetCustomerFlexDiscountsAsync(string customerId, int? limit, int? offset, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = CustomerRoutes.FlexDiscounts(_adobeSettings.BaseUrl, customerId);
+        var requestUri = CustomerRoutes.FlexDiscounts(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         requestUri = requestUri
             .AddQueryParam("limit", limit)

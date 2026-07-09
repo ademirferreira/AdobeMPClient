@@ -11,7 +11,7 @@ public partial class AdobeClient
     public async Task<Result<ResellerTransferResponse>> CreateResellerChangeAsync(ResellerTransferRequest resellerChangeRequest, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = TransferRoutes.ResellerTransfer(_adobeSettings.BaseUrl);
+        var requestUri = TransferRoutes.ResellerTransfer(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl);
 
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -23,7 +23,7 @@ public partial class AdobeClient
     public async Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = TransferRoutes.GetReserllerTransfer(_adobeSettings.BaseUrl, transferId);
+        var requestUri = TransferRoutes.GetReserllerTransfer(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, transferId);
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);

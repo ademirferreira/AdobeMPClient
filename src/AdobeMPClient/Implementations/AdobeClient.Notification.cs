@@ -12,7 +12,7 @@ public partial class AdobeClient
         {
             var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
     
-            var requestUri = NotificationRoutes.Get(_adobeSettings.BaseUrl);
+            var requestUri = NotificationRoutes.Get(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl);
     
             if (parameters != null)
             {
