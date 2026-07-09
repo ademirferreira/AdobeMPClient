@@ -21,7 +21,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
     private volatile TokenResponse? _currentToken;
     private long _tokenExpirationTicks;
     private const int TokenExpirationBufferSeconds = 30;
-    private async Task<TokenResponse> GetAccessTokenAsync()
+    private async Task<TokenResponse> GetAccessTokenAsync(CancellationToken ct)
     {
         var expiration = new DateTime(Interlocked.Read(ref _tokenExpirationTicks), DateTimeKind.Utc);
         if (_currentToken != null && !string.IsNullOrEmpty(_currentToken.AccessToken) && DateTime.UtcNow < expiration)
@@ -29,7 +29,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
             return _currentToken;
         }
 
-        await _tokenSemaphore.WaitAsync().ConfigureAwait(false);
+        await _tokenSemaphore.WaitAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -47,7 +47,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
                 ClientId = _adobeSettings.ApiKey,
                 ClientSecret = _adobeSettings.ClientSecret,
                 Scope = "openid,AdobeID,read_organizations"
-            }).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
 
             if (tokenResponse.IsError)
             {
