@@ -14,7 +14,7 @@ public partial class AdobeClient
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
-        var requestUri = OrderRoutes.GetAll(_adobeSettings.BaseUrl, customerId);
+        var requestUri = OrderRoutes.GetAll(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         if (parameters != null)
         {
@@ -42,7 +42,7 @@ public partial class AdobeClient
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
-        var requestUri = OrderRoutes.GetById(_adobeSettings.BaseUrl, customerId, orderId)
+        var requestUri = OrderRoutes.GetById(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId, orderId)
             .AddQueryParam("fetch-price", fetchPrice);
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
@@ -55,7 +55,7 @@ public partial class AdobeClient
     public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, bool? fetchPrice = false, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId).AddQueryParam("fetch-price", fetchPrice);
+        var requestUri = OrderRoutes.Create(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId).AddQueryParam("fetch-price", fetchPrice);
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);
@@ -66,7 +66,7 @@ public partial class AdobeClient
     public async Task<Result<Order>> UpdateOrderAsync(string customerId, string orderId, UpdateOrder updateOrder, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = OrderRoutes.Update(_adobeSettings.BaseUrl, customerId, orderId);
+        var requestUri = OrderRoutes.Update(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId, orderId);
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);

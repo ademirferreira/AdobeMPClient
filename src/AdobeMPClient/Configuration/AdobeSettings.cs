@@ -1,4 +1,6 @@
-﻿namespace AdobeMPClient.Configuration;
+﻿using AdobeMPClient.Routes;
+
+namespace AdobeMPClient.Configuration;
 
 public sealed class AdobeSettings
 {
@@ -7,4 +9,5 @@ public sealed class AdobeSettings
     public string ApiKey { get; set; } = string.Empty;
     public string ClientSecret { get; set; } = string.Empty;
     public string BaseUrl { get; set; } = string.Empty;
+    public string ApiVersion { get; set; } = AdobeApiVersion.V3;
 }

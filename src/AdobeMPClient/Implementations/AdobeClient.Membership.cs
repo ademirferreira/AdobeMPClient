@@ -12,7 +12,7 @@ public partial class AdobeClient
     public async Task<Result<PreviewOffer>> PreviewTransfer(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = MembershipRoutes.Preview(_adobeSettings.BaseUrl, membershipId);
+        var requestUri = MembershipRoutes.Preview(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId);
 
         requestUri = requestUri
             .AddQueryParam("ignore-order-return", ignoreOrderReturn)
@@ -27,7 +27,7 @@ public partial class AdobeClient
     public async Task<Result<TransferResponse>> CreateTransfer(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = MembershipRoutes.CreateTransfer(_adobeSettings.BaseUrl, membershipId);
+        var requestUri = MembershipRoutes.CreateTransfer(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId);
 
         requestUri = requestUri
             .AddQueryParam("ignore-order-return", ignoreOrderReturn)
@@ -45,7 +45,7 @@ public partial class AdobeClient
     public async Task<Result<TransferResponse>> GetTransfer(string membershipId, string transferId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = MembershipRoutes.TransferDetails(_adobeSettings.BaseUrl, membershipId, transferId);
+        var requestUri = MembershipRoutes.TransferDetails(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId, transferId);
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);

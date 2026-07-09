@@ -10,7 +10,7 @@ public partial class AdobeClient
     public async Task<Result<RecommendationsResponse>> FetchRecommendationsAsync(FetchRecommendations fetchRecommendations, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = Routes.RecommendationRoutes.Fetch(_adobeSettings.BaseUrl);
+        var requestUri = Routes.RecommendationRoutes.Fetch(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl);
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);

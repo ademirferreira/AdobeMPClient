@@ -13,7 +13,7 @@ public partial class AdobeClient
     public async Task<Result<Subscriptions>> GetSubscriptionsAsync(string customerId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = SubscriptionRoutes.GetAll(_adobeSettings.BaseUrl, customerId);
+        var requestUri = SubscriptionRoutes.GetAll(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -25,7 +25,7 @@ public partial class AdobeClient
     public async Task<Result<Subscription>> GetSubscriptionByIdAsync(string customerId, string subscriptionId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = SubscriptionRoutes.GetById(_adobeSettings.BaseUrl, customerId, subscriptionId);
+        var requestUri = SubscriptionRoutes.GetById(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId, subscriptionId);
 
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -37,7 +37,7 @@ public partial class AdobeClient
     public async Task<Result<Subscription>> CreateSubscriptionAsync(string customerId, CreateSubscription createSubscription, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = SubscriptionRoutes.Create(_adobeSettings.BaseUrl, customerId);
+        var requestUri = SubscriptionRoutes.Create(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId);
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
         SetHeaders(request);
@@ -48,7 +48,7 @@ public partial class AdobeClient
     public async Task<Result<Subscription>> UpdateSubscriptionAsync(string customerId, string subscriptionId, UpdateSubscription updateSubscription, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = SubscriptionRoutes.Update(_adobeSettings.BaseUrl, customerId, subscriptionId);
+        var requestUri = SubscriptionRoutes.Update(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId, subscriptionId);
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
 
         request.SetBearerToken(token.AccessToken!);
@@ -61,7 +61,7 @@ public partial class AdobeClient
     public async Task<Result<Subscription>> RemoveFlexDiscountAsync(string customerId, string subscriptionId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
-        var requestUri = SubscriptionRoutes.ResetDiscount(_adobeSettings.BaseUrl, customerId, subscriptionId)
+        var requestUri = SubscriptionRoutes.ResetDiscount(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, customerId, subscriptionId)
             .AddQueryParam("reset-flex-discount-codes", true);
         
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
