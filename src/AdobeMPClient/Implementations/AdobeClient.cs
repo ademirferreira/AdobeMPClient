@@ -89,8 +89,17 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
 
             if (!response.IsSuccessStatusCode)
             {
-                var adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
-                               ?? new Error { Message = "Erro desconhecido" };
+                Error adobeError;
+                try
+                {
+                    adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
+                                 ?? new Error { Message = "Erro desconhecido" };
+                }
+                catch (JsonException)
+                {
+                    var raw = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+                    adobeError = new Error { Message = string.IsNullOrWhiteSpace(raw) ? "Erro desconhecido" : raw };
+                }
 
                 return Result<T>.Failure(adobeError, (int)response.StatusCode);
             }
