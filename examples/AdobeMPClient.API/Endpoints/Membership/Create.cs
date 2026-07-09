@@ -20,7 +20,7 @@ public class Create : IEndpoint
             CancellationToken ct) =>
         {
             Logger.LogInformation("Initiating transfer for membershipId: {MembershipId} to resellerId: {ResellerId}", membershipId, request.ResellerId);
-            var result = await adobeClient.CreateTransfer(request, membershipId, ignoreOrderReturn, expireOpenPas, ct);
+            var result = await adobeClient.CreateTransferAsync(request, membershipId, ignoreOrderReturn, expireOpenPas, ct);
             return result.ToResult();
         })
             .WithName("CreateTransfer")

@@ -16,7 +16,7 @@ public class TransferDetails : IEndpoint
             IAdobeClient adobeClient,
             CancellationToken ct) =>
         {
-            var result = await adobeClient.GetTransfer(membershipId, transferId, ct);
+            var result = await adobeClient.GetTransferAsync(membershipId, transferId, ct);
             return result.ToResult();
         }).WithName("GetTransferDetails")
           .WithTags("memberships")

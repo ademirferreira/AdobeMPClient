@@ -19,7 +19,7 @@ public class Preview : IEndpoint
             CancellationToken ct) =>
         {
             Logger.LogInformation("Previewing transfer for membershipId: {MembershipId}", membershipId);
-            var result = await adobeClient.PreviewTransfer(membershipId, ignoreOrderReturn, expireOpenPas, ct);
+            var result = await adobeClient.PreviewTransferAsync(membershipId, ignoreOrderReturn, expireOpenPas, ct);
             return result.ToResult();
         })
             .WithName("PreviewOffers")
