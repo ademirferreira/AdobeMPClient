@@ -1,15 +1,19 @@
 using System.Net;
 using System.Text;
 using AdobeMPClient.Configuration;
+using AdobeMPClient.Extensions;
 using AdobeMPClient.Implementations;
+using AdobeMPClient.Interfaces;
 using AdobeMPClient.Models.Subscriptions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace AdobeMPClient.Tests;
 
 public class AdobeClientTests
 {
-    private static (AdobeClient Client, FakeHttpMessageHandler Handler) CreateClient()
+    private static (AdobeClient Client, FakeHttpMessageHandler Handler, IAdobeTokenProvider TokenProvider) CreateClient()
     {
         var handler = new FakeHttpMessageHandler();
         var httpClient = new HttpClient(handler);
@@ -21,7 +25,9 @@ public class AdobeClientTests
             ClientSecret = "test-client-secret"
         });
 
-        return (new AdobeClient(httpClient, settings), handler);
+        var tokenProvider = new AdobeTokenProvider(new FakeHttpClientFactory(handler), settings);
+
+        return (new AdobeClient(httpClient, settings, tokenProvider), handler, tokenProvider);
     }
 
     private static HttpResponseMessage JsonResponse(HttpStatusCode statusCode, string json)
@@ -33,7 +39,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ReusesCachedToken_AcrossMultipleCalls()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse(expiresIn: 3600);
         handler.ApiResponder = _ => JsonResponse(HttpStatusCode.OK, """{"totalCount":0,"items":[]}""");
 
@@ -47,7 +53,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_RefreshesToken_WhenExpirationBufferAlreadyElapsed()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         // expires_in menor que o buffer de 30s: a expiracao calculada ja fica no passado.
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse(expiresIn: 10);
         handler.ApiResponder = _ => JsonResponse(HttpStatusCode.OK, """{"totalCount":0,"items":[]}""");
@@ -61,7 +67,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ThrowsAdobeAuthenticationException_WhenTokenRequestFails()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenErrorResponse();
 
         await Assert.ThrowsAsync<AdobeAuthenticationException>(
@@ -71,7 +77,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ReturnsSuccess_WhenApiRespondsWithValidJson()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse();
         handler.ApiResponder = _ => JsonResponse(HttpStatusCode.OK, """{"totalCount":1,"items":[]}""");
 
@@ -86,7 +92,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ReturnsFailure_WhenApiRespondsWithValidJsonError()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse();
         handler.ApiResponder = _ => JsonResponse(
             HttpStatusCode.BadRequest,
@@ -104,7 +110,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_PreservesRealHttpStatus_WhenErrorBodyIsNotJson()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse();
         handler.ApiResponder = _ => new HttpResponseMessage(HttpStatusCode.TooManyRequests)
         {
@@ -121,7 +127,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ReturnsServiceUnavailable_WhenHttpRequestFails()
     {
-        var (client, handler) = CreateClient();
+        var (client, handler, _) = CreateClient();
         handler.TokenResponder = _ => FakeHttpMessageHandler.TokenResponse();
         handler.ApiResponder = _ => throw new HttpRequestException("connection reset");
 
@@ -134,7 +140,7 @@ public class AdobeClientTests
     [Fact]
     public async Task GetSubscriptionsAsync_ThrowsOperationCanceledException_WhenTokenAlreadyCancelled()
     {
-        var (client, _) = CreateClient();
+        var (client, _, _) = CreateClient();
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
@@ -145,14 +151,39 @@ public class AdobeClientTests
     [Fact]
     public void Dispose_DoesNotThrow_EvenWhenCalledMultipleTimes()
     {
-        var (client, _) = CreateClient();
+        var (_, _, tokenProvider) = CreateClient();
+        var disposable = Assert.IsAssignableFrom<IDisposable>(tokenProvider);
 
         var exception = Record.Exception(() =>
         {
-            client.Dispose();
-            client.Dispose();
+            disposable.Dispose();
+            disposable.Dispose();
         });
 
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public void AddAdobeClient_ResolvesIAdobeTokenProvider_AsSingleton()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Adobe:Ims"] = "https://ims.test",
+                ["Adobe:BaseUrl"] = "https://api.test",
+                ["Adobe:ApiKey"] = "test-api-key",
+                ["Adobe:ClientSecret"] = "test-client-secret"
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddAdobeClient(configuration);
+
+        using var provider = services.BuildServiceProvider();
+
+        var first = provider.GetRequiredService<IAdobeTokenProvider>();
+        var second = provider.GetRequiredService<IAdobeTokenProvider>();
+
+        Assert.Same(first, second);
     }
 }
