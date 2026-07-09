@@ -9,7 +9,7 @@ namespace AdobeMPClient.Implementations;
 
 public partial class AdobeClient
 {
-    public async Task<Result<PreviewOffer>> PreviewTransfer(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
+    public async Task<Result<PreviewOffer>> PreviewTransferAsync(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = MembershipRoutes.Preview(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId);
@@ -24,7 +24,7 @@ public partial class AdobeClient
         return await SendAsync<PreviewOffer>(request, ct).ConfigureAwait(false);
     }
 
-    public async Task<Result<TransferResponse>> CreateTransfer(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
+    public async Task<Result<TransferResponse>> CreateTransferAsync(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = MembershipRoutes.CreateTransfer(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId);
@@ -42,7 +42,7 @@ public partial class AdobeClient
         return await SendAsync<TransferResponse>(request, ct).ConfigureAwait(false);
     }
 
-    public async Task<Result<TransferResponse>> GetTransfer(string membershipId, string transferId, CancellationToken ct = default)
+    public async Task<Result<TransferResponse>> GetTransferAsync(string membershipId, string transferId, CancellationToken ct = default)
     {
         var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = MembershipRoutes.TransferDetails(_adobeSettings.ApiVersion, _adobeSettings.BaseUrl, membershipId, transferId);

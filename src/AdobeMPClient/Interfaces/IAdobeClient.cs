@@ -55,7 +55,7 @@ public interface IAdobeClient
 
     Task<Result<ResellerTransferDetails>> GetResellerTransferDetailsAsync(string transferId, CancellationToken ct = default);
 
-    Task<Result<PreviewOffer>> PreviewTransfer(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
-    Task<Result<TransferResponse>> CreateTransfer(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
-    Task<Result<TransferResponse>> GetTransfer(string membershipId, string transferId, CancellationToken ct = default);
+    Task<Result<PreviewOffer>> PreviewTransferAsync(string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
+    Task<Result<TransferResponse>> CreateTransferAsync(TransferRequest transferRequest, string membershipId, bool? ignoreOrderReturn = null, bool? expireOpenPas = null, CancellationToken ct = default);
+    Task<Result<TransferResponse>> GetTransferAsync(string membershipId, string transferId, CancellationToken ct = default);
 }
