@@ -19,7 +19,7 @@ public class Fetch : IEndpoint
             var result = await adobeClient.FetchPriceListAsync(parameters, limit, offset, ct).ConfigureAwait(false);
             return result.ToResult();
         }).WithName("FetchPriceList")
-        .WithTags("Price List")
+        .WithTags("price list")
         .WithSummary("Fetches the price list based on the provided parameters.")
         .WithDescription("Fetches the price list based on the provided parameters. This endpoint allows you to retrieve pricing information for Adobe products and services based on various criteria such as region, market segment, price list type, currency, and more.")
         .Produces<PriceListResponse>()

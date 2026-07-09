@@ -23,7 +23,7 @@ public class Preview : IEndpoint
             return result.ToResult();
         })
             .WithName("PreviewOffers")
-            .WithTags("Membership")
+            .WithTags("memberships")
             .WithSummary("Previews a transfer for a given membership ID.")
             .WithDescription("Previews a transfer from LWS to Marketplace for a given membership ID. This endpoint allows you to see the potential offers that would be available for transfer without actually performing the transfer.")
             .Produces<PreviewOffer>(StatusCodes.Status200OK)
