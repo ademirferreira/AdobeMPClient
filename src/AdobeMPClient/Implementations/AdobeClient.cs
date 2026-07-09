@@ -12,62 +12,12 @@ namespace AdobeMPClient.Implementations;
 public sealed class AdobeAuthenticationException(string message, Exception? inner = null)
     : Exception(message, inner);
 
-public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options) : IAdobeClient, IDisposable
+public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options, IAdobeTokenProvider tokenProvider) : IAdobeClient
 {
     private readonly AdobeSettings _adobeSettings = options.Value;
 
-    private readonly SemaphoreSlim _tokenSemaphore = new(1, 1);
+    private Task<TokenResponse> GetAccessTokenAsync(CancellationToken ct) => tokenProvider.GetAccessTokenAsync(ct);
 
-    private volatile TokenResponse? _currentToken;
-    private long _tokenExpirationTicks;
-    private const int TokenExpirationBufferSeconds = 30;
-    private async Task<TokenResponse> GetAccessTokenAsync(CancellationToken ct)
-    {
-        var expiration = new DateTime(Interlocked.Read(ref _tokenExpirationTicks), DateTimeKind.Utc);
-        if (_currentToken != null && !string.IsNullOrEmpty(_currentToken.AccessToken) && DateTime.UtcNow < expiration)
-        {
-            return _currentToken;
-        }
-
-        await _tokenSemaphore.WaitAsync(ct).ConfigureAwait(false);
-
-        try
-        {
-            var expirationInner = new DateTime(Interlocked.Read(ref _tokenExpirationTicks), DateTimeKind.Utc);
-            if (_currentToken != null
-                && !string.IsNullOrEmpty(_currentToken.AccessToken)
-                && DateTime.UtcNow < expirationInner)
-            {
-                return _currentToken;
-            }
-
-            var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = $"{_adobeSettings.Ims}/ims/token/v3",
-                ClientId = _adobeSettings.ApiKey,
-                ClientSecret = _adobeSettings.ClientSecret,
-                Scope = "openid,AdobeID,read_organizations"
-            }, ct).ConfigureAwait(false);
-
-            if (tokenResponse.IsError)
-            {
-                throw new AdobeAuthenticationException(
-                    $"Falha na autenticação Adobe: {tokenResponse.Error} - {tokenResponse.ErrorDescription}",
-                    tokenResponse.Exception);
-            }
-
-            _currentToken = tokenResponse;
-            Interlocked.Exchange(
-                ref _tokenExpirationTicks,
-                DateTime.UtcNow.AddSeconds(tokenResponse.ExpiresIn - TokenExpirationBufferSeconds).Ticks);
-
-            return tokenResponse;
-        }
-        finally
-        {
-            _tokenSemaphore.Release();
-        }
-    }
     private void SetHeaders(HttpRequestMessage request)
     {
         request.Headers.Add("x-api-key", _adobeSettings.ApiKey);
@@ -121,10 +71,5 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
             var error = new Error { Message = $"Erro ao desserializar resposta da Adobe: {ex.Message}" };
             return Result<T>.Failure(error, 502);
         }
-    }
-
-    public void Dispose()
-    {
-        _tokenSemaphore.Dispose();
     }
 }
