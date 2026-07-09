@@ -10,7 +10,7 @@ public partial class AdobeClient
 {
     public async Task<Result<FlexDiscountResponse>> FetchFlexDiscountsAsync(FlexDiscountRequest? parameters = null, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = FlexDiscountsRoutes.Get(_adobeSettings.BaseUrl);
         if (parameters != null)
         {

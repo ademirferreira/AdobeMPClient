@@ -10,7 +10,7 @@ public partial class AdobeClient
 {
         public async Task<Result<NotificationResponse>> GetNotificationsAsync(NotificationRequest? parameters = null, CancellationToken ct = default)
         {
-            var token = await GetAccessTokenAsync().ConfigureAwait(false);
+            var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
     
             var requestUri = NotificationRoutes.Get(_adobeSettings.BaseUrl);
     
