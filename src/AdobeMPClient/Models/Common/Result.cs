@@ -4,7 +4,7 @@ public class Result<T>
 {
     public bool IsSuccess { get; }
     public T? Data { get; }
-    public Error? Error { get; set; }
+    public Error? Error { get; }
     public int StatusCode { get; }
 
     private Result(bool isSuccess, T? data, Error? error, int statusCode)
