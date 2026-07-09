@@ -12,7 +12,7 @@ namespace AdobeMPClient.Implementations;
 public sealed class AdobeAuthenticationException(string message, Exception? inner = null)
     : Exception(message, inner);
 
-public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options) : IAdobeClient
+public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options) : IAdobeClient, IDisposable
 {
     private readonly AdobeSettings _adobeSettings = options.Value;
 
@@ -123,4 +123,8 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
         }
     }
 
+    public void Dispose()
+    {
+        _tokenSemaphore.Dispose();
+    }
 }
