@@ -20,9 +20,11 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
 
     private void SetHeaders(HttpRequestMessage request)
     {
-        request.Headers.Add("x-api-key", _adobeSettings.ApiKey);
-        request.Headers.Add("x-request-id", Guid.NewGuid().ToString());
-        request.Headers.Add("x-correlation-id", Guid.NewGuid().ToString());
+        var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+
+        request.Headers.TryAddWithoutValidation("x-api-key", _adobeSettings.ApiKey);
+        request.Headers.TryAddWithoutValidation("x-request-id", Guid.NewGuid().ToString());
+        request.Headers.TryAddWithoutValidation("x-correlation-id", correlationId);
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new()
