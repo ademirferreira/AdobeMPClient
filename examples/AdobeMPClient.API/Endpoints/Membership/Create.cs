@@ -24,7 +24,7 @@ public class Create : IEndpoint
             return result.ToResult();
         })
             .WithName("CreateTransfer")
-            .WithTags("Membership")
+            .WithTags("memberships")
             .WithSummary("Initiates a transfer for a given membership ID.")
             .WithDescription("Initiates a transfer from LWS to Marketplace for a given membership ID. This endpoint performs the actual transfer of the membership to the specified reseller.")
             .Produces<TransferResponse>(StatusCodes.Status202Accepted)

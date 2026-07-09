@@ -19,7 +19,7 @@ public class TransferDetails : IEndpoint
             var result = await adobeClient.GetTransfer(membershipId, transferId, ct);
             return result.ToResult();
         }).WithName("GetTransferDetails")
-          .WithTags("Memberships")
+          .WithTags("memberships")
           .WithSummary("Get transfer details for a specific membership transfer.")
           .WithDescription("Retrieves the details of a specific transfer associated with a membership, including the transfer status and related information.")
           .Produces<TransferResponse>(StatusCodes.Status200OK)

@@ -12,7 +12,7 @@ public partial class AdobeClient
 {
     public async Task<Result<OrderHistory>> GetOrderHistoryAsync(string customerId, GetOrderHistoryRequest? parameters = null, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
         var requestUri = OrderRoutes.GetAll(_adobeSettings.BaseUrl, customerId);
 
@@ -40,7 +40,7 @@ public partial class AdobeClient
 
     public async Task<Result<Order>> GetOrderByIdAsync(string customerId, string orderId, bool? fetchPrice = null, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
         var requestUri = OrderRoutes.GetById(_adobeSettings.BaseUrl, customerId, orderId)
             .AddQueryParam("fetch-price", fetchPrice);
@@ -54,7 +54,7 @@ public partial class AdobeClient
 
     public async Task<Result<Order>> CreateOrderAsync(string customerId, CreateOrder createOrder, bool? fetchPrice = false, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = OrderRoutes.Create(_adobeSettings.BaseUrl, customerId).AddQueryParam("fetch-price", fetchPrice);
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
         request.SetBearerToken(token.AccessToken!);
@@ -65,7 +65,7 @@ public partial class AdobeClient
 
     public async Task<Result<Order>> UpdateOrderAsync(string customerId, string orderId, UpdateOrder updateOrder, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = OrderRoutes.Update(_adobeSettings.BaseUrl, customerId, orderId);
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
         request.SetBearerToken(token.AccessToken!);

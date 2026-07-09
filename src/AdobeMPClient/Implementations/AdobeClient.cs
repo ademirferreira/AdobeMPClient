@@ -12,7 +12,7 @@ namespace AdobeMPClient.Implementations;
 public sealed class AdobeAuthenticationException(string message, Exception? inner = null)
     : Exception(message, inner);
 
-public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options) : IAdobeClient
+public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> options) : IAdobeClient, IDisposable
 {
     private readonly AdobeSettings _adobeSettings = options.Value;
 
@@ -21,7 +21,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
     private volatile TokenResponse? _currentToken;
     private long _tokenExpirationTicks;
     private const int TokenExpirationBufferSeconds = 30;
-    private async Task<TokenResponse> GetAccessTokenAsync()
+    private async Task<TokenResponse> GetAccessTokenAsync(CancellationToken ct)
     {
         var expiration = new DateTime(Interlocked.Read(ref _tokenExpirationTicks), DateTimeKind.Utc);
         if (_currentToken != null && !string.IsNullOrEmpty(_currentToken.AccessToken) && DateTime.UtcNow < expiration)
@@ -29,7 +29,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
             return _currentToken;
         }
 
-        await _tokenSemaphore.WaitAsync().ConfigureAwait(false);
+        await _tokenSemaphore.WaitAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -47,7 +47,7 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
                 ClientId = _adobeSettings.ApiKey,
                 ClientSecret = _adobeSettings.ClientSecret,
                 Scope = "openid,AdobeID,read_organizations"
-            }).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
 
             if (tokenResponse.IsError)
             {
@@ -89,12 +89,20 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
 
             if (!response.IsSuccessStatusCode)
             {
-                var adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
-                               ?? new Error { Message = "Erro desconhecido" };
+                Error adobeError;
+                try
+                {
+                    adobeError = await response.Content.ReadFromJsonAsync<Error>(JsonOptions, cancellationToken: ct).ConfigureAwait(false)
+                                 ?? new Error { Message = "Erro desconhecido" };
+                }
+                catch (JsonException)
+                {
+                    var raw = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+                    adobeError = new Error { Message = string.IsNullOrWhiteSpace(raw) ? "Erro desconhecido" : raw };
+                }
 
                 return Result<T>.Failure(adobeError, (int)response.StatusCode);
             }
-            var teste = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             var result = await response.Content.ReadFromJsonAsync<T>(JsonOptions, ct).ConfigureAwait(false);
 
             return Result<T>.Success(result!, (int)response.StatusCode);
@@ -115,4 +123,8 @@ public partial class AdobeClient(HttpClient httpClient, IOptions<AdobeSettings> 
         }
     }
 
+    public void Dispose()
+    {
+        _tokenSemaphore.Dispose();
+    }
 }

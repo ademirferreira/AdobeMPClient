@@ -13,7 +13,7 @@ public class Get : IEndpoint
         {
             var result = await client.FetchFlexDiscountsAsync(request, ct).ConfigureAwait(false);
             return result.ToResult();
-        }).WithName("GetFlexDiscounts").WithTags("Flex Discounts")
+        }).WithName("GetFlexDiscounts").WithTags("flex discounts")
         .WithSummary("Fetches a list of available flex discounts based on the provided filters.")
         .WithDescription("This endpoint allows you to retrieve a list of flex discounts that match the specified criteria, such as categories, market segment, country, offer IDs, and more. You can also specify a date range and pagination parameters to control the results.")
         .Produces<FlexDiscountResponse>(StatusCodes.Status200OK)

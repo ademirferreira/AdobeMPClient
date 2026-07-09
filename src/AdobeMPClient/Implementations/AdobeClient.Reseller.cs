@@ -12,7 +12,7 @@ public partial class AdobeClient
 {
     public async Task<Result<Reseller>> GetResellerAsync(string resellerId, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
 
         var requestUri = ResellerRoutes.Get(_adobeSettings.BaseUrl, resellerId);
 
@@ -25,7 +25,7 @@ public partial class AdobeClient
 
     public async Task<Result<Resellers>> GetResellersAsync(GetResellersList? parameters, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = ResellerRoutes.GetAll(_adobeSettings.BaseUrl);
 
         if (parameters != null)
@@ -46,7 +46,7 @@ public partial class AdobeClient
 
     public async Task<Result<Reseller>> CreateResellerAsync(CreateReseller createReseller, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = ResellerRoutes.Create(_adobeSettings.BaseUrl);
 
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
@@ -58,7 +58,7 @@ public partial class AdobeClient
 
     public async Task<Result<Reseller>> UpdateResellerAsync(string resellerId, UpdateReseller updateReseller, CancellationToken ct = default)
     {
-        var token = await GetAccessTokenAsync().ConfigureAwait(false);
+        var token = await GetAccessTokenAsync(ct).ConfigureAwait(false);
         var requestUri = ResellerRoutes.Update(_adobeSettings.BaseUrl, resellerId);
 
         var request = new HttpRequestMessage(HttpMethod.Patch, requestUri);
